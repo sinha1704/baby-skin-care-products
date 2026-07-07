@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '../store/useAuthStore';
 import { LayoutDashboard, ShoppingBag, FolderHeart, FileSpreadsheet, LogOut, Globe } from 'lucide-react';
 import { Inter, Outfit } from 'next/font/google';
+import { getApiBaseUrl } from '../utils/api';
 import './globals.css';
 
 const inter = Inter({
@@ -77,32 +78,32 @@ export default function RootLayout({
     return (
       <div className="min-h-screen flex flex-col md:flex-row bg-cream text-charcoal w-full">
         {/* Sidebar panel */}
-        <aside className="w-full md:w-64 bg-navy text-white flex flex-col justify-between flex-shrink-0">
+        <aside className="w-full md:w-64 bg-white/70 backdrop-blur-md border-r border-primary-200/40 flex flex-col justify-between flex-shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
           <div>
             {/* Logo */}
-            <div className="p-6 border-b border-white/10 flex items-center justify-between">
-              <span className="font-display font-semibold tracking-wider text-sm text-cream uppercase">
+            <div className="p-6 border-b border-primary-100/50 flex items-center justify-between">
+              <span className="font-display font-semibold tracking-wider text-xs text-primary-900 uppercase">
                 Admin Console
               </span>
               <a
-                href="http://localhost:3000"
+                href={getApiBaseUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-cream/60 hover:text-cream flex items-center transition-colors"
-                title="Go to Storefront (Port 3000)"
+                className="text-primary-800/60 hover:text-primary-900 flex items-center transition-colors p-1.5 hover:bg-primary-50 rounded-lg"
+                title="Go to Storefront"
               >
-                <Globe size={16} />
+                <Globe size={15} />
               </a>
             </div>
-
+ 
             {/* Profile */}
-            <div className="p-6 border-b border-white/5 bg-navy-light/20 text-xs">
-              <p className="font-display font-semibold text-white/90 truncate">{user?.name || 'Administrator'}</p>
-              <p className="text-white/50 truncate">{user?.email || 'admin@babyskin.com'}</p>
+            <div className="mx-4 my-5 p-4 rounded-2xl bg-primary-50/40 border border-primary-100/30 text-xs">
+              <p className="font-display font-semibold text-primary-900 truncate">{user?.name || 'Administrator'}</p>
+              <p className="text-primary-700/60 truncate mt-0.5">{user?.email || 'admin@babyskin.com'}</p>
             </div>
-
+ 
             {/* Nav Menu */}
-            <nav className="p-4 space-y-1.5 flex-grow">
+            <nav className="px-3 space-y-1 flex-grow">
               {menuItems.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
@@ -110,29 +111,29 @@ export default function RootLayout({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-display tracking-wider uppercase font-medium transition-all
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-display tracking-wider uppercase font-medium transition-all cursor-pointer
                       ${isActive 
-                        ? 'bg-primary-600 text-white font-semibold shadow-sm' 
-                        : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                        ? 'bg-primary-800 text-white font-semibold shadow-sm' 
+                        : 'text-primary-800/80 hover:text-primary-900 hover:bg-primary-50/70'}`}
                   >
-                    <Icon size={16} />
+                    <Icon size={15} />
                     <span>{item.name}</span>
                   </Link>
                 );
               })}
             </nav>
           </div>
-
+ 
           {/* Sign out */}
-          <div className="p-4 border-t border-white/10">
+          <div className="p-4 border-t border-primary-100/50">
             <button
               onClick={() => {
                 logout();
                 router.push('/login');
               }}
-              className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-display tracking-wider uppercase font-medium text-red-400 hover:text-white hover:bg-red-500/10 transition-all focus:outline-none cursor-pointer"
+              className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-display tracking-wider uppercase font-medium text-red-500 hover:text-white hover:bg-red-500/90 transition-all focus:outline-none cursor-pointer border border-transparent hover:border-red-600/10"
             >
-              <LogOut size={16} />
+              <LogOut size={15} />
               <span>Sign Out</span>
             </button>
           </div>
