@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { Plus, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
+import { getApiBaseUrl } from '../../utils/api';
 
 interface Category {
   id: string;
@@ -32,7 +33,7 @@ export default function AdminCategories() {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const apiBaseUrl = getApiBaseUrl();
 
   const fetchCategories = async () => {
     try {
@@ -187,7 +188,7 @@ export default function AdminCategories() {
             <div>
               <div className="aspect-video w-full rounded-2xl overflow-hidden bg-cream-light mb-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={cat.image?.startsWith('/') ? `http://localhost:3000${cat.image}` : cat.image} alt={cat.name} className="object-cover w-full h-full" />
+                <img src={cat.image?.startsWith('/') ? `${getApiBaseUrl()}${cat.image}` : cat.image} alt={cat.name} className="object-cover w-full h-full" />
               </div>
               <span className="text-[10px] font-mono text-primary-755 font-semibold">{cat.id}</span>
               <h3 className="font-display font-medium text-primary-950 text-base mt-0.5 mb-1.5">

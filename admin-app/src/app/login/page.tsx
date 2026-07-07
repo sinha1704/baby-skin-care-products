@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../store/useAuthStore';
 import { Lock, Mail, AlertTriangle } from 'lucide-react';
+import { getApiBaseUrl } from '../../utils/api';
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function AdminLogin() {
     setLoading(true);
     setErrorMsg('');
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const apiBaseUrl = getApiBaseUrl();
 
     try {
       const res = await fetch(`${apiBaseUrl}/api/auth`, {

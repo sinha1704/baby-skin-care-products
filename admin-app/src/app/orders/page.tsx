@@ -5,6 +5,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { formatCurrency } from '../../utils/currency';
 import { Badge } from '../../components/ui/Badge';
 import { Eye, Edit3, X, MapPin, Calendar, CreditCard, ChevronRight } from 'lucide-react';
+import { getApiBaseUrl } from '../../utils/api';
 
 interface OrderItem {
   productId: string;
@@ -43,7 +44,7 @@ export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const apiBaseUrl = getApiBaseUrl();
 
   const fetchOrders = async () => {
     const headers = {
@@ -300,7 +301,7 @@ export default function AdminOrders() {
                       <div className="flex items-center space-x-3 min-w-0">
                         <div className="w-10 h-10 rounded-lg bg-primary-50 overflow-hidden flex-shrink-0">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={item.image?.startsWith('/') ? `http://localhost:3000${item.image}` : item.image} alt={item.productName} className="object-cover w-full h-full" />
+                          <img src={item.image?.startsWith('/') ? `${getApiBaseUrl()}${item.image}` : item.image} alt={item.productName} className="object-cover w-full h-full" />
                         </div>
                         <div className="truncate">
                           <span className="font-semibold text-primary-950 block">{item.productName}</span>

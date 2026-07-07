@@ -6,6 +6,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { formatCurrency } from '../../utils/currency';
 import { Badge } from '../../components/ui/Badge';
 import { DollarSign, FileText, AlertTriangle, Folders, ShoppingBag } from 'lucide-react';
+import { getApiBaseUrl } from '../../utils/api';
 
 interface Category {
   id: string;
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiBaseUrl = getApiBaseUrl();
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
@@ -239,7 +240,7 @@ export default function AdminDashboard() {
                       <div className="flex items-center space-x-2.5 min-w-0">
                         <div className="w-8 h-8 rounded-lg bg-primary-50 overflow-hidden flex-shrink-0">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={p.images[0]?.startsWith('/') ? `http://localhost:3000${p.images[0]}` : p.images[0]} alt={p.name} className="object-cover w-full h-full" />
+                          <img src={p.images[0]?.startsWith('/') ? `${getApiBaseUrl()}${p.images[0]}` : p.images[0]} alt={p.name} className="object-cover w-full h-full" />
                         </div>
                         <span className="truncate text-primary-850 font-medium">{p.name}</span>
                       </div>
