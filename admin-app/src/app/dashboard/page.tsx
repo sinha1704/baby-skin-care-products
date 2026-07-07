@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuthStore } from '../../store/useAuthStore';
 import { formatCurrency } from '../../utils/currency';
 import { Badge } from '../../components/ui/Badge';
-import { DollarSign, FileText, AlertTriangle, Folders, ShoppingBag } from 'lucide-react';
+import { DollarSign, FileText, AlertTriangle, Folders, ShoppingBag, Loader2 } from 'lucide-react';
 import { getApiBaseUrl } from '../../utils/api';
 
 interface Category {
@@ -85,8 +85,81 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="font-display text-primary-650 animate-pulse">
-        Loading dashboard metrics...
+      <div className="space-y-8 animate-pulse">
+        {/* Animated Top Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-7 w-56 bg-primary-200/50 rounded-full" />
+            <div className="h-3.5 w-80 bg-primary-100/50 rounded-full" />
+          </div>
+          <div className="flex items-center gap-3">
+            <Loader2 className="animate-spin text-primary-650" size={20} />
+            <div className="h-4 w-28 bg-primary-100/50 rounded-full" />
+          </div>
+        </div>
+
+        {/* 4 Premium Cards Skeleton Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white/60 border border-primary-200/30 rounded-3xl p-6 space-y-4">
+              <div className="flex justify-between items-center">
+                <div className="h-4 w-24 bg-primary-100/50 rounded-full" />
+                <div className="w-10 h-10 rounded-2xl bg-primary-100/40" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-8 w-32 bg-primary-200/50 rounded-full" />
+                <div className="h-3 w-40 bg-primary-100/30 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Split Layout Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Recent Orders List Skeleton */}
+          <div className="lg:col-span-2 bg-white/60 border border-primary-200/30 rounded-3xl p-6 space-y-5">
+            <div className="flex justify-between items-center">
+              <div className="h-4.5 w-32 bg-primary-200/50 rounded-full" />
+              <div className="h-3 w-16 bg-primary-100/40 rounded-full" />
+            </div>
+            <div className="space-y-4 pt-2">
+              {[1, 2, 3].map((j) => (
+                <div key={j} className="flex justify-between items-center pb-4 border-b border-primary-100/40">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-full bg-primary-100/40" />
+                    <div className="space-y-1.5">
+                      <div className="h-3.5 w-36 bg-primary-200/40 rounded-full" />
+                      <div className="h-3 w-28 bg-primary-100/30 rounded-full" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 items-end flex flex-col">
+                    <div className="h-3.5 w-16 bg-primary-200/40 rounded-full" />
+                    <div className="h-3 w-12 bg-primary-100/30 rounded-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Low Stock Alerts Skeleton */}
+          <div className="bg-white/60 border border-primary-200/30 rounded-3xl p-6 space-y-5">
+            <div className="flex justify-between items-center">
+              <div className="h-4.5 w-36 bg-primary-200/50 rounded-full" />
+              <div className="h-3 w-12 bg-primary-100/40 rounded-full" />
+            </div>
+            <div className="space-y-4 pt-2">
+              {[1, 2, 3].map((k) => (
+                <div key={k} className="flex justify-between items-center pb-4 border-b border-primary-100/40">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-primary-100/40" />
+                    <div className="h-3.5 w-28 bg-primary-200/40 rounded-full" />
+                  </div>
+                  <div className="h-3.5 w-12 bg-primary-100/40 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
