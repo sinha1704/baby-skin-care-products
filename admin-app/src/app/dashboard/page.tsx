@@ -214,22 +214,22 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
             <div
               key={card.name}
-              className="p-6 bg-white/70 backdrop-blur-sm border rounded-3xl shadow-sm flex items-center space-x-4 border-primary-250/20"
+              className="p-4 bg-white/70 backdrop-blur-sm border rounded-2xl shadow-sm flex items-center space-x-3.5 border-primary-250/20"
             >
-              <div className={`p-3 rounded-2xl ${card.color} border`}>
-                <Icon size={20} />
+              <div className={`p-2.5 rounded-xl ${card.color} border`}>
+                <Icon size={16} />
               </div>
               <div>
-                <span className="block text-xs font-display text-primary-700/60 font-medium uppercase tracking-wider">
+                <span className="block text-[10px] font-display text-primary-700/60 font-medium uppercase tracking-wider">
                   {card.name}
                 </span>
-                <span className="block text-xl font-display font-semibold text-primary-950 mt-0.5">
+                <span className="block text-lg font-display font-semibold text-primary-955 mt-0.5">
                   {card.value}
                 </span>
               </div>
@@ -239,39 +239,39 @@ export default function AdminDashboard() {
       </div>
 
       {/* Grid panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Recent Orders table */}
-        <div className="lg:col-span-8 bg-white/70 backdrop-blur-sm border border-primary-200/40 rounded-3xl p-6 shadow-sm">
-          <div className="flex justify-between items-center pb-4 border-b border-primary-200/20 mb-6">
-            <h3 className="font-display font-medium text-sm text-primary-955 uppercase tracking-wide">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Recent Transactions table */}
+        <div className="lg:col-span-8 bg-white/70 backdrop-blur-sm border border-primary-200/40 rounded-2xl p-5 shadow-sm">
+          <div className="flex justify-between items-center pb-3 border-b border-primary-200/20 mb-5">
+            <h3 className="font-display font-semibold text-xs text-primary-955 uppercase tracking-wider">
               Recent Transactions
             </h3>
-            <Link href="/orders" className="text-xs font-display font-medium text-primary-600 hover:underline">
+            <Link href="/orders" className="text-[10px] font-display font-bold text-primary-850 hover:text-primary-955 transition-colors uppercase tracking-wider">
               Manage Orders →
             </Link>
           </div>
 
           {recentOrders.length === 0 ? (
-            <p className="text-xs text-primary-700/60 font-sans italic py-4">No transactions found.</p>
+            <p className="text-[11px] text-primary-700/60 font-sans italic py-3">No transactions found.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs font-sans">
+              <table className="w-full text-left border-collapse text-[11px] font-sans">
                 <thead>
-                  <tr className="border-b border-primary-200/30 text-primary-900 font-display font-medium uppercase tracking-wider">
-                    <th className="pb-3">Order ID</th>
-                    <th className="pb-3">Customer</th>
-                    <th className="pb-3">Total</th>
-                    <th className="pb-3">Status</th>
-                    <th className="pb-3">Date</th>
+                  <tr className="border-b border-primary-200/30 text-primary-900 font-display font-bold uppercase tracking-wider">
+                    <th className="pb-2.5">Order ID</th>
+                    <th className="pb-2.5">Customer</th>
+                    <th className="pb-2.5">Total</th>
+                    <th className="pb-2.5">Status</th>
+                    <th className="pb-2.5">Date</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-primary-100">
+                <tbody className="divide-y divide-primary-100/50">
                   {recentOrders.map((ord) => (
-                    <tr key={ord.id} className="text-primary-850">
-                      <td className="py-3.5 font-semibold text-primary-950">{ord.id}</td>
-                      <td className="py-3.5">{ord.customerName}</td>
-                      <td className="py-3.5 font-medium">{formatCurrency(ord.total)}</td>
-                      <td className="py-3.5">
+                    <tr key={ord.id} className="text-primary-800 hover:bg-cream-light/10 transition-colors">
+                      <td className="py-2.5 font-semibold text-primary-955 font-mono">{ord.id}</td>
+                      <td className="py-2.5">{ord.customerName}</td>
+                      <td className="py-2.5 font-medium">{formatCurrency(ord.total)}</td>
+                      <td className="py-2.5">
                         <Badge
                           variant={
                             ord.status === 'Delivered' ? 'success' :
@@ -283,8 +283,8 @@ export default function AdminDashboard() {
                           {ord.status}
                         </Badge>
                       </td>
-                      <td className="py-3.5 text-primary-700/70">
-                        {new Date(ord.createdAt).toLocaleDateString()}
+                      <td className="py-2.5 text-primary-700/60">
+                        {new Date(ord.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                     </tr>
                   ))}
@@ -295,29 +295,29 @@ export default function AdminDashboard() {
         </div>
 
         {/* Low Stock Warnings */}
-        <div className="lg:col-span-4 bg-white/70 backdrop-blur-sm border border-primary-200/40 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-white/70 backdrop-blur-sm border border-primary-200/40 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
           <div>
-            <h3 className="font-display font-medium text-sm text-primary-955 uppercase tracking-wide pb-4 border-b border-primary-200/20 mb-6">
+            <h3 className="font-display font-semibold text-xs text-primary-955 uppercase tracking-wider pb-3 border-b border-primary-200/20 mb-5">
               Low Stock Warnings
             </h3>
 
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               {products.filter((p) => p.stock <= 25).length === 0 ? (
-                <p className="text-xs text-primary-700/60 font-sans italic py-4">All items fully stocked.</p>
+                <p className="text-[11px] text-primary-700/60 font-sans italic py-3">All items fully stocked.</p>
               ) : (
                 products
                   .filter((p) => p.stock <= 25)
                   .slice(0, 4)
                   .map((p) => (
-                    <div key={p.id} className="flex justify-between items-center text-xs">
+                    <div key={p.id} className="flex justify-between items-center text-[11px]">
                       <div className="flex items-center space-x-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-lg bg-primary-50 overflow-hidden flex-shrink-0">
+                        <div className="w-7 h-7 rounded-lg bg-primary-50 overflow-hidden flex-shrink-0 border border-primary-100/50">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={p.images[0]?.startsWith('/') ? `${getApiBaseUrl()}${p.images[0]}` : p.images[0]} alt={p.name} className="object-cover w-full h-full" />
                         </div>
                         <span className="truncate text-primary-850 font-medium">{p.name}</span>
                       </div>
-                      <span className={`font-semibold font-mono pl-3 ${p.stock === 0 ? 'text-red-500' : 'text-amber-500'}`}>
+                      <span className={`font-semibold font-mono pl-2 ${p.stock === 0 ? 'text-red-500' : 'text-amber-600'}`}>
                         {p.stock === 0 ? 'OUT' : `${p.stock} Left`}
                       </span>
                     </div>
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
 
           <Link
             href="/products"
-            className="w-full inline-flex items-center justify-center py-2.5 bg-primary-50 border border-primary-200 rounded-xl font-display font-semibold text-xs text-primary-850 uppercase transition-all text-center mt-6 hover:bg-primary-100"
+            className="w-full inline-flex items-center justify-center py-2 bg-primary-50 border border-primary-200/60 rounded-xl font-display font-semibold text-[10px] text-primary-850 uppercase tracking-wider transition-all text-center mt-5 hover:bg-primary-100/80 cursor-pointer"
           >
             Manage Catalog
           </Link>
