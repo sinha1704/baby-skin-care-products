@@ -1,18 +1,18 @@
 export function getApiBaseUrl(): string {
-  // Try custom environment variable first
+  // If running inside browser
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    // Check if hosted on any Vercel domain (includes preview branch subdomains)
+    if (host.includes('vercel.app')) {
+      return 'https://sss-baby-skin-care.vercel.app';
+    }
+  }
+
+  // Fallback environment variable
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
   
-  // If running inside browser on Vercel production domain
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host.includes('vercel.app')) {
-      // Dynamic fallback to the customer storefront Vercel API production domain
-      return 'https://sss-baby-skin-care.vercel.app';
-    }
-  }
-  
-  // Default fallback for local environment
+  // Default fallback for local development
   return 'http://localhost:3000';
 }
