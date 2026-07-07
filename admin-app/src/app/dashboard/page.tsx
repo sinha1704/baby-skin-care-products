@@ -179,25 +179,25 @@ export default function AdminDashboard() {
       name: 'Total Revenue',
       value: formatCurrency(totalSales),
       icon: DollarSign,
-      color: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      color: 'bg-emerald-500 text-white border-emerald-600',
     },
     {
       name: 'Total Orders',
       value: totalOrdersCount.toString(),
       icon: FileText,
-      color: 'bg-blue-50 text-blue-700 border-blue-100',
+      color: 'bg-blue-500 text-white border-blue-600',
     },
     {
       name: 'Out of Stock Items',
       value: outOfStockCount.toString(),
       icon: AlertTriangle,
-      color: outOfStockCount > 0 ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-gray-50 text-gray-500 border-gray-100',
+      color: outOfStockCount > 0 ? 'bg-rose-500 text-white border-rose-600' : 'bg-gray-500 text-white border-gray-600',
     },
     {
       name: 'Active Categories',
       value: totalCategoriesCount.toString(),
       icon: Folders,
-      color: 'bg-purple-50 text-purple-700 border-purple-100',
+      color: 'bg-purple-500 text-white border-purple-600',
     },
   ];
 
