@@ -78,18 +78,18 @@ export default function RootLayout({
     return (
       <div className="min-h-screen flex flex-col md:flex-row bg-cream text-charcoal w-full">
         {/* Sidebar panel */}
-        <aside className="w-full md:w-64 bg-white/70 backdrop-blur-md border-r border-primary-200/40 flex flex-col justify-between flex-shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+        <aside className="w-full md:w-64 bg-navy text-white flex flex-col justify-between flex-shrink-0">
           <div>
             {/* Logo */}
-            <div className="p-6 border-b border-primary-100/50 flex items-center justify-between">
-              <span className="font-display font-semibold tracking-wider text-xs text-primary-900 uppercase">
+            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+              <span className="font-display font-semibold tracking-wider text-xs text-cream uppercase">
                 Admin Console
               </span>
               <a
                 href={getApiBaseUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-800/60 hover:text-primary-900 flex items-center transition-colors p-1.5 hover:bg-primary-50 rounded-lg"
+                className="text-cream/60 hover:text-white flex items-center transition-colors p-1.5 hover:bg-white/5 rounded-lg"
                 title="Go to Storefront"
               >
                 <Globe size={15} />
@@ -97,9 +97,9 @@ export default function RootLayout({
             </div>
  
             {/* Profile */}
-            <div className="mx-4 my-5 p-4 rounded-2xl bg-primary-50/40 border border-primary-100/30 text-xs">
-              <p className="font-display font-semibold text-primary-900 truncate">{user?.name || 'Administrator'}</p>
-              <p className="text-primary-700/60 truncate mt-0.5">{user?.email || 'admin@babyskin.com'}</p>
+            <div className="mx-4 my-5 p-4 rounded-2xl bg-navy-light/20 border border-white/5 text-xs">
+              <p className="font-display font-semibold text-white/90 truncate">{user?.name || 'Administrator'}</p>
+              <p className="text-white/50 truncate mt-0.5">{user?.email || 'admin@babyskin.com'}</p>
             </div>
  
             {/* Nav Menu */}
@@ -114,7 +114,7 @@ export default function RootLayout({
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-display tracking-wider uppercase font-medium transition-all cursor-pointer
                       ${isActive 
                         ? 'bg-primary-800 text-white font-semibold shadow-sm' 
-                        : 'text-primary-800/80 hover:text-primary-900 hover:bg-primary-50/70'}`}
+                        : 'text-white/70 hover:text-white hover:bg-white/5'}`}
                   >
                     <Icon size={15} />
                     <span>{item.name}</span>
@@ -125,13 +125,13 @@ export default function RootLayout({
           </div>
  
           {/* Sign out */}
-          <div className="p-4 border-t border-primary-100/50">
+          <div className="p-4 border-t border-white/10">
             <button
               onClick={() => {
                 logout();
                 router.push('/login');
               }}
-              className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-display tracking-wider uppercase font-medium text-red-500 hover:text-white hover:bg-red-500/90 transition-all focus:outline-none cursor-pointer border border-transparent hover:border-red-600/10"
+              className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-display tracking-wider uppercase font-medium text-red-400 hover:text-white hover:bg-red-500/10 transition-all focus:outline-none cursor-pointer"
             >
               <LogOut size={15} />
               <span>Sign Out</span>
