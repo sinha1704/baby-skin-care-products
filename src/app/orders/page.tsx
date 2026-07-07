@@ -121,9 +121,10 @@ function OrderProgressBar({ status }: { status: Order['status'] }) {
   );
 }
 
-function OrderCard({ order }: { order: Order }) {
+function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
   const cfg = STATUS_CONFIG[order.status];
 
   const handleDownloadPDF = async () => {
@@ -153,6 +154,38 @@ function OrderCard({ order }: { order: Order }) {
     }
   };
 
+  const handleCancelOrder = async () => {
+    if (!window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+      return;
+    }
+    setCancelLoading(true);
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cancel' })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to cancel order');
+      }
+      alert('Order cancelled successfully.');
+      onRefresh();
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Error cancelling order');
+    } finally {
+      setCancelLoading(false);
+    }
+  };
+
+  // Check if order is eligible for cancellation (COD, not shipped/delivered/cancelled, and <24 hours old)
+  const isCod = order.paymentMethod === 'COD';
+  const orderTime = new Date(order.createdAt).getTime();
+  const now = new Date().getTime();
+  const hoursElapsed = (now - orderTime) / (1000 * 60 * 60);
+  const canCancel = isCod && !['Shipped', 'Delivered', 'Cancelled'].includes(order.status) && hoursElapsed <= 24;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -172,6 +205,11 @@ function OrderCard({ order }: { order: Order }) {
               {cfg.icon}
               {cfg.label}
             </span>
+            {isCod && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-display font-bold uppercase tracking-wider bg-orange-50 border border-orange-200 text-orange-700">
+                Cash on Delivery
+              </span>
+            )}
           </div>
           <p className="text-xs text-primary-500 font-sans">
             {new Date(order.createdAt).toLocaleDateString('en-IN', {
@@ -265,17 +303,29 @@ function OrderCard({ order }: { order: Order }) {
                 </div>
               </div>
 
-              {/* Shipping address */}
-              <div className="pt-3 border-t border-primary-50">
-                <h4 className="text-xs font-display font-semibold text-primary-500 uppercase tracking-wider mb-2">
-                  Delivery Address
-                </h4>
-                <p className="text-sm text-primary-700 font-sans leading-relaxed">
-                  {order.shippingAddress.address}, {order.shippingAddress.city},{' '}
-                  {order.shippingAddress.state} — {order.shippingAddress.postalCode}
-                  <br />
-                  {order.shippingAddress.country}
-                </p>
+              {/* Shipping address & payment info */}
+              <div className="pt-3 border-t border-primary-50 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-xs font-display font-semibold text-primary-500 uppercase tracking-wider mb-2">
+                    Delivery Address
+                  </h4>
+                  <p className="text-xs text-primary-700 font-sans leading-relaxed">
+                    {order.shippingAddress.address}, {order.shippingAddress.city},{' '}
+                    {order.shippingAddress.state} — {order.shippingAddress.postalCode}
+                    <br />
+                    {order.shippingAddress.country}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-xs font-display font-semibold text-primary-500 uppercase tracking-wider mb-2">
+                    Payment Details
+                  </h4>
+                  <p className="text-xs text-primary-700 font-sans">
+                    Method: <strong>{isCod ? 'Cash on Delivery (COD)' : 'Online Card Payment'}</strong>
+                    <br />
+                    Status: <strong className="capitalize">{order.status === 'Paid' ? 'Paid' : 'Pending Payment'}</strong>
+                  </p>
+                </div>
               </div>
 
               {/* Order total breakdown */}
@@ -288,8 +338,8 @@ function OrderCard({ order }: { order: Order }) {
                 </span>
               </div>
 
-              {/* Print / Save PDF Invoice */}
-              <div className="pt-2">
+              {/* Actions group */}
+              <div className="pt-2 flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => {
                     // Temporarily add a printable class to body to isolate this order's invoice
@@ -302,10 +352,20 @@ function OrderCard({ order }: { order: Order }) {
                     // Restore original class
                     document.body.className = originalClass;
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary-800 hover:bg-primary-900 text-white rounded-xl font-display font-semibold text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow-md"
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary-800 hover:bg-primary-900 text-white rounded-xl font-display font-semibold text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow-md cursor-pointer"
                 >
-                  <Printer size={14} /> Print / Save Invoice (PDF)
+                  <Printer size={14} /> Print / Save Invoice
                 </button>
+
+                {canCancel && (
+                  <button
+                    onClick={handleCancelOrder}
+                    disabled={cancelLoading}
+                    className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-display font-semibold text-xs uppercase tracking-wider transition-all border border-red-200 cursor-pointer disabled:opacity-60"
+                  >
+                    {cancelLoading ? 'Cancelling...' : 'Cancel Order (COD Limit)'}
+                  </button>
+                )}
               </div>
             </div>
             
@@ -498,7 +558,7 @@ export default function MyOrdersPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.07 }}
               >
-                <OrderCard order={order} />
+                <OrderCard order={order} onRefresh={() => fetchOrders()} />
               </motion.div>
             ))}
 

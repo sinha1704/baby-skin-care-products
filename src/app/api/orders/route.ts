@@ -25,7 +25,8 @@ const orderCreateSchema = z.object({
   shippingAddress: shippingAddressSchema,
   items: z.array(orderItemSchema).min(1, 'Order must contain items'),
   total: z.number(),
-  paymentIntentId: z.string().optional()
+  paymentIntentId: z.string().optional(),
+  paymentMethod: z.enum(['CARD', 'COD']).optional()
 });
 
 // GET: Retrieve all orders (Protected)
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
       status: val.paymentIntentId ? 'Paid' : 'Pending', // Mark paid immediately if Stripe processed
       items: val.items,
       paymentIntentId: val.paymentIntentId,
+      paymentMethod: val.paymentMethod || (val.paymentIntentId ? 'CARD' : 'COD'),
       createdAt: new Date().toISOString()
     };
 

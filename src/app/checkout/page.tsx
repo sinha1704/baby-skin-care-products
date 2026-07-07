@@ -64,6 +64,52 @@ export default function Checkout() {
     cvv: '',
   });
 
+  const [paymentMethod, setPaymentMethod] = useState<'CARD' | 'COD'>('CARD');
+
+  const handleCodSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPaymentLoading(true);
+    setPaymentError('');
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: formData.name,
+          customerEmail: formData.email,
+          shippingAddress: {
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            postalCode: formData.postalCode,
+            country: formData.country,
+          },
+          total: total,
+          items: items.map(item => ({
+            productId: item.id,
+            productName: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          paymentMethod: 'COD'
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to place Cash on Delivery order');
+      const order = await res.json();
+
+      // Clear the Shopping Cart
+      clearCart();
+      router.push(`/checkout/success?orderId=${order.id}`);
+    } catch (err: any) {
+      console.error(err);
+      setPaymentError(err.message || 'Error processing Cash on Delivery order');
+      setPaymentLoading(false);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -370,7 +416,69 @@ export default function Checkout() {
           ) : (
             /* STEP 2: Secure Payment Form */
             <div className="space-y-6">
-              {paymentIntent?.isSimulated ? (
+              {/* Payment Method Selector Tabs */}
+              <div className="bg-white/60 backdrop-blur-sm border border-primary-200/40 rounded-2xl p-1 flex">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('CARD')}
+                  className={`flex-1 py-2.5 text-center text-[11px] font-display font-semibold rounded-xl uppercase tracking-wider transition-all cursor-pointer ${
+                    paymentMethod === 'CARD'
+                      ? 'bg-primary-800 text-white shadow-sm'
+                      : 'text-primary-800/60 hover:text-primary-800'
+                  }`}
+                >
+                  Online Card Payment
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('COD')}
+                  className={`flex-1 py-2.5 text-center text-[11px] font-display font-semibold rounded-xl uppercase tracking-wider transition-all cursor-pointer ${
+                    paymentMethod === 'COD'
+                      ? 'bg-primary-800 text-white shadow-sm'
+                      : 'text-primary-800/60 hover:text-primary-800'
+                  }`}
+                >
+                  Cash on Delivery (COD)
+                </button>
+              </div>
+
+              {paymentMethod === 'COD' ? (
+                /* Cash on Delivery (COD) Form */
+                <form onSubmit={handleCodSubmit} className="bg-white/60 backdrop-blur-sm border border-primary-200/40 rounded-3xl p-6 sm:p-8 space-y-6">
+                  <h2 className="font-display font-medium text-lg text-primary-955 border-b border-primary-200/20 pb-3 flex items-center">
+                    <CheckCircle2 size={18} className="text-primary-600 mr-2" />
+                    Cash on Delivery Confirmation
+                  </h2>
+
+                  <div className="bg-primary-50/50 border border-primary-100 rounded-2xl p-4 text-[11px] text-primary-850 leading-relaxed font-sans space-y-2">
+                    <p><strong>Cash on Delivery selected:</strong> You will pay the amount of <strong>{formatCurrency(total)}</strong> to the delivery agent when your package arrives.</p>
+                    <p className="text-[10px] text-primary-650">Note: You can cancel this order from your dashboard within 24 hours of placement.</p>
+                  </div>
+
+                  {paymentError && (
+                    <div className="bg-red-50 text-red-600 text-xs rounded-xl p-3 border border-red-200">
+                      {paymentError}
+                    </div>
+                  )}
+
+                  <div className="flex space-x-4">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="w-1/3 py-3 bg-cream border border-primary-200 rounded-full font-display font-medium text-xs text-primary-850 uppercase transition-all cursor-pointer"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={paymentLoading}
+                      className="w-2/3 py-3 bg-primary-800 hover:bg-primary-900 text-white rounded-full font-display font-semibold text-xs uppercase shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      {paymentLoading ? 'Placing Order...' : 'Confirm COD Order'}
+                    </button>
+                  </div>
+                </form>
+              ) : paymentIntent?.isSimulated ? (
                 /* Simulated Sandbox Payment Form */
                 <form onSubmit={handleSimulatedPaymentSubmit} className="bg-white/60 backdrop-blur-sm border border-primary-200/40 rounded-3xl p-6 sm:p-8 space-y-6">
                   <h2 className="font-display font-medium text-lg text-primary-955 border-b border-primary-200/20 pb-3 flex items-center">
@@ -436,14 +544,14 @@ export default function Checkout() {
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="w-1/3 py-3 bg-cream border border-primary-200 rounded-full font-display font-medium text-xs text-primary-850 uppercase transition-all"
+                      className="w-1/3 py-3 bg-cream border border-primary-200 rounded-full font-display font-medium text-xs text-primary-850 uppercase transition-all cursor-pointer"
                     >
                       Back
                     </button>
                     <button
                       type="submit"
                       disabled={paymentLoading}
-                      className="w-2/3 py-3 bg-primary-800 hover:bg-primary-900 text-white rounded-full font-display font-semibold text-xs uppercase shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-2/3 py-3 bg-primary-800 hover:bg-primary-900 text-white rounded-full font-display font-semibold text-xs uppercase shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {paymentLoading ? 'Authorizing Mock Order...' : `Pay ${formatCurrency(total)}`}
                     </button>

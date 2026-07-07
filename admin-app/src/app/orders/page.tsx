@@ -30,6 +30,7 @@ interface Order {
   status: 'Pending' | 'Paid' | 'Shipped' | 'Delivered' | 'Cancelled';
   items: OrderItem[];
   paymentIntentId?: string;
+  paymentMethod?: 'CARD' | 'COD';
   createdAt: string;
 }
 

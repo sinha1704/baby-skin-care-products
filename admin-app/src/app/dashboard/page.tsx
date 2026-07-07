@@ -32,6 +32,7 @@ interface Order {
   customerEmail: string;
   total: number;
   status: 'Pending' | 'Paid' | 'Shipped' | 'Delivered' | 'Cancelled';
+  paymentMethod?: 'CARD' | 'COD';
   createdAt: string;
 }
 
