@@ -340,22 +340,37 @@ function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }
 
               {/* Actions group */}
               <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => {
-                    // Temporarily add a printable class to body to isolate this order's invoice
-                    const originalClass = document.body.className;
-                    document.body.classList.add('print-single-invoice');
-                    
-                    // We can print directly
-                    window.print();
-                    
-                    // Restore original class
-                    document.body.className = originalClass;
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary-800 hover:bg-primary-900 text-white rounded-xl font-display font-semibold text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow-md cursor-pointer"
-                >
-                  <Printer size={14} /> Print / Save Invoice
-                </button>
+                {order.status === 'Delivered' ? (
+                  <button
+                    onClick={() => {
+                      // Temporarily add a printable class to body to isolate this order's invoice
+                      const originalClass = document.body.className;
+                      document.body.classList.add('print-single-invoice');
+                      
+                      // We can print directly
+                      window.print();
+                      
+                      // Restore original class
+                      document.body.className = originalClass;
+                    }}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary-800 hover:bg-primary-900 text-white rounded-xl font-display font-semibold text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow-md cursor-pointer"
+                  >
+                    <Printer size={14} /> Print / Save Invoice
+                  </button>
+                ) : (
+                  <div className="flex-1 flex flex-col justify-center">
+                    <button
+                      disabled
+                      className="w-full flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-400 border border-gray-250/20 rounded-xl font-display font-semibold text-xs uppercase tracking-wider cursor-not-allowed"
+                      title="Invoice is available once the order is delivered"
+                    >
+                      <Printer size={14} /> Invoice Locked
+                    </button>
+                    <span className="text-[9px] text-primary-500 font-sans mt-1 text-center">
+                      * Printable invoice will be unlocked once order is delivered
+                    </span>
+                  </div>
+                )}
 
                 {canCancel && (
                   <button
