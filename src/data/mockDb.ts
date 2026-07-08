@@ -16,8 +16,8 @@ const IS_VERCEL = process.env.VERCEL === '1' || process.env.NOW_BUILDER === '1';
 const BUNDLED_DB_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
 const WRITE_DB_PATH = IS_VERCEL ? path.join('/tmp', 'db.json') : BUNDLED_DB_PATH;
 
-// Free public KV store bucket to persist db.json across Vercel serverless containers
-const KV_DB_URL = 'https://kvdb.io/TtRUCZbMrfvFUK1X1r4RTz/database';
+// Production JSON bin URL to persist db.json across Vercel serverless containers
+const KV_DB_URL = 'https://jsonbin-zeta.vercel.app/api/bins/cAIvJyC1GT';
 
 interface DatabaseSchema {
   categories: Category[];
@@ -110,7 +110,7 @@ export async function syncFromRemote(): Promise<DatabaseSchema> {
 async function saveToRemote(data: DatabaseSchema) {
   try {
     await fetch(KV_DB_URL, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
