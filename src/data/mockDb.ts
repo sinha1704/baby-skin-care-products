@@ -17,7 +17,7 @@ const BUNDLED_DB_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
 const WRITE_DB_PATH = IS_VERCEL ? path.join('/tmp', 'db.json') : BUNDLED_DB_PATH;
 
 // Free public KV store bucket to persist db.json across Vercel serverless containers
-const KV_DB_URL = 'https://kvdb.io/nurture_dew_prod_db_v1_08072026/database';
+const KV_DB_URL = 'https://kvdb.io/TtRUCZbMrfvFUK1X1r4RTz/database';
 
 interface DatabaseSchema {
   categories: Category[];
