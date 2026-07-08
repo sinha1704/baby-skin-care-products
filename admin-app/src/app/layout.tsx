@@ -97,9 +97,19 @@ export default function RootLayout({
             </div>
  
             {/* Profile */}
-            <div className="mx-4 my-5 p-4 rounded-2xl bg-navy-light/20 border border-white/5 text-xs">
-              <p className="font-display font-semibold text-white/90 truncate">{user?.name || 'Administrator'}</p>
-              <p className="text-white/50 truncate mt-0.5">{user?.email || 'admin@babyskin.com'}</p>
+            <div className="mx-4 my-6 p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center space-x-3 shadow-md hover:bg-white/8 transition-all duration-300 group">
+              {/* Avatar Initials Badge */}
+              <div className="w-10 h-10 rounded-full bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center font-display font-semibold text-sm tracking-wider shadow-inner uppercase shrink-0 transition-colors">
+                {user?.name ? user.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2) : 'AD'}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-display font-medium text-white/95 text-xs truncate leading-tight group-hover:text-primary-200 transition-colors">
+                  {user?.name || 'Administrator'}
+                </p>
+                <p className="text-[10px] text-white/50 truncate mt-1 leading-none font-mono">
+                  {user?.email || 'admin@babyskin.com'}
+                </p>
+              </div>
             </div>
  
             {/* Nav Menu */}
