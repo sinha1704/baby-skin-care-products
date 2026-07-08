@@ -66,13 +66,13 @@ export default function AdminLogin() {
           <div>
             {/* Header logo */}
             <div className="mb-6">
-              <span className="font-display text-sm tracking-widest text-primary-850 font-semibold block uppercase">
+              <span className="font-display text-sm tracking-widest text-primary-800 font-semibold block uppercase">
                 NURTURE & DEW
               </span>
-              <h2 className="mt-3 text-xl sm:text-2xl font-display font-medium text-primary-950 tracking-wide">
+              <h2 className="mt-3 text-xl sm:text-2xl font-display font-medium text-primary-900 tracking-wide">
                 Admin Console Sign In
               </h2>
-              <p className="mt-1 text-xs text-primary-700/60 font-sans">
+              <p className="mt-1 text-xs text-primary-750/70 font-sans">
                 Securely connect to store data services.
               </p>
             </div>
@@ -90,11 +90,11 @@ export default function AdminLogin() {
             <form className="space-y-4" onSubmit={handleSubmit}>
               {/* Email input */}
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-display font-semibold text-primary-950 uppercase tracking-widest">
+                <label className="block text-[10px] font-display font-semibold text-primary-900 uppercase tracking-widest">
                   Administrator Email
                 </label>
                 <div className="relative group">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-primary-500 group-focus-within:text-primary-750 transition-colors">
+                  <span className="absolute inset-y-0 left-4 flex items-center text-primary-500 group-focus-within:text-primary-600 transition-colors">
                     <Mail size={15} />
                   </span>
                   <input
@@ -110,11 +110,11 @@ export default function AdminLogin() {
 
               {/* Password input */}
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-display font-semibold text-primary-950 uppercase tracking-widest">
+                <label className="block text-[10px] font-display font-semibold text-primary-900 uppercase tracking-widest">
                   Secure Password
                 </label>
                 <div className="relative group">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-primary-500 group-focus-within:text-primary-750 transition-colors">
+                  <span className="absolute inset-y-0 left-4 flex items-center text-primary-500 group-focus-within:text-primary-600 transition-colors">
                     <Lock size={15} />
                   </span>
                   <input
@@ -129,8 +129,8 @@ export default function AdminLogin() {
               </div>
 
               {errorMsg && (
-                <div className="bg-red-50/80 text-red-750 text-xs rounded-2xl p-3.5 border border-red-105 flex items-start space-x-2 text-left font-sans">
-                  <AlertTriangle size={16} className="mt-0.5 flex-shrink-0 text-red-650" />
+                <div className="bg-red-50/80 text-red-700 text-xs rounded-2xl p-3.5 border border-red-200 flex items-start space-x-2 text-left font-sans">
+                  <AlertTriangle size={16} className="mt-0.5 flex-shrink-0 text-red-600" />
                   <span>{errorMsg}</span>
                 </div>
               )}
@@ -138,7 +138,7 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-primary-600 hover:bg-primary-750 text-white rounded-2xl font-display font-semibold text-xs tracking-widest uppercase shadow-lg hover:shadow-xl hover:shadow-primary-100/50 transition-all duration-300 focus:outline-none disabled:opacity-50 transform active:scale-[0.98]"
+                className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-display font-semibold text-xs tracking-widest uppercase shadow-lg hover:shadow-xl hover:shadow-primary-100/50 transition-all duration-300 focus:outline-none disabled:opacity-50 transform active:scale-[0.98]"
               >
                 {loading ? 'Verifying Credentials...' : 'Sign In To Panel'}
               </button>
@@ -153,20 +153,20 @@ export default function AdminLogin() {
         </div>
 
         {/* Banner Column */}
-        <div className="hidden md:block md:col-span-5 relative overflow-hidden bg-primary-950">
+        <div className="hidden md:block md:col-span-5 relative overflow-hidden bg-charcoal">
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-85 transition-transform duration-700 hover:scale-105"
+            className="absolute inset-0 bg-cover bg-center opacity-90 transition-transform duration-700 hover:scale-105"
             style={{ backgroundImage: `url('/admin_login_banner.png')` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary-950/90 via-primary-950/20 to-transparent" />
-          <div className="absolute inset-x-6 bottom-10 text-white flex flex-col justify-end h-full">
-            <span className="text-[9px] font-display font-semibold uppercase tracking-widest text-primary-300 mb-2">
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
+          <div className="absolute inset-x-6 bottom-8 p-6 bg-charcoal/65 backdrop-blur-md rounded-2xl border border-white/10 text-white flex flex-col">
+            <span className="text-[9px] font-display font-semibold uppercase tracking-widest text-primary-200 mb-1.5">
               Management Portal
             </span>
-            <h3 className="font-display text-xl font-medium tracking-wide mb-3 leading-snug">
+            <h3 className="font-display text-lg font-medium tracking-wide mb-2 leading-snug">
               Nurture & Dew Control Panel
             </h3>
-            <p className="text-[11px] text-primary-200/80 font-sans leading-relaxed">
+            <p className="text-[11px] text-white/75 font-sans leading-relaxed">
               Configure catalogue items, manage pending customer orders, review ratings, and keep store settings up to date.
             </p>
           </div>

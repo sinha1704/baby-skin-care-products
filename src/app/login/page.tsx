@@ -108,24 +108,24 @@ function LoginContent() {
         <div className="col-span-1 md:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
           <div>
             <div className="mb-8">
-              <Link href="/" className="font-display font-semibold text-2xl text-primary-950 tracking-widest uppercase hover:opacity-80 transition-opacity">
+              <Link href="/" className="font-display font-semibold text-2xl text-charcoal tracking-widest uppercase hover:opacity-80 transition-opacity">
                 NURTURE & DEW
               </Link>
-              <p className="text-xs text-primary-750/70 font-sans mt-2.5">
+              <p className="text-xs text-primary-800/80 font-sans mt-2.5">
                 {isSignUp ? 'Create your premium customer account' : 'Sign in to place orders and manage your account'}
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50/80 border border-red-105 text-red-750 rounded-2xl flex items-start space-x-2.5 text-xs font-sans">
+              <div className="mb-6 p-4 bg-red-50/80 border border-red-200 text-red-700 rounded-2xl flex items-start space-x-2.5 text-xs font-sans">
                 <AlertCircle size={16} className="mt-0.5 flex-shrink-0 text-red-650" />
                 <span>{error}</span>
               </div>
             )}
 
             {success && (
-              <div className="mb-6 p-4 bg-emerald-50/80 border border-emerald-100 text-emerald-750 rounded-2xl flex items-start space-x-2.5 text-xs font-sans">
-                <CheckCircle size={16} className="mt-0.5 flex-shrink-0 text-emerald-650" />
+              <div className="mb-6 p-4 bg-emerald-50/80 border border-emerald-100 text-emerald-700 rounded-2xl flex items-start space-x-2.5 text-xs font-sans">
+                <CheckCircle size={16} className="mt-0.5 flex-shrink-0 text-emerald-600" />
                 <span>{success}</span>
               </div>
             )}
@@ -133,7 +133,7 @@ function LoginContent() {
             <form onSubmit={handleSubmit} className="space-y-5">
               {isSignUp && (
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-display font-semibold text-primary-950 uppercase tracking-widest">
+                  <label className="block text-[10px] font-display font-semibold text-primary-900 uppercase tracking-widest">
                     Full Name *
                   </label>
                   <div className="relative group">
@@ -151,7 +151,7 @@ function LoginContent() {
               )}
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-display font-semibold text-primary-950 uppercase tracking-widest">
+                <label className="block text-[10px] font-display font-semibold text-primary-900 uppercase tracking-widest">
                   Email Address *
                 </label>
                 <div className="relative group">
@@ -168,7 +168,7 @@ function LoginContent() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-display font-semibold text-primary-950 uppercase tracking-widest">
+                <label className="block text-[10px] font-display font-semibold text-primary-900 uppercase tracking-widest">
                   Password *
                 </label>
                 <div className="relative group">
@@ -187,7 +187,7 @@ function LoginContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-primary-600 hover:bg-primary-750 text-white font-display font-semibold text-xs tracking-widest uppercase rounded-2xl shadow-lg hover:shadow-xl hover:shadow-primary-100/50 transition-all duration-300 flex items-center justify-center space-x-2 disabled:bg-primary-300 transform active:scale-[0.98]"
+                className="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white font-display font-semibold text-xs tracking-widest uppercase rounded-2xl shadow-lg hover:shadow-xl hover:shadow-primary-100/50 transition-all duration-300 flex items-center justify-center space-x-2 disabled:bg-primary-300 transform active:scale-[0.98]"
               >
                 {loading ? (
                   <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -202,7 +202,7 @@ function LoginContent() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-primary-100 text-center">
-            <p className="text-xs text-primary-850/80 font-sans">
+            <p className="text-xs text-primary-800/80 font-sans">
               {isSignUp ? 'Already have an account?' : "Don't have an account yet?"}{' '}
               <button
                 onClick={() => {
@@ -218,20 +218,20 @@ function LoginContent() {
         </div>
 
         {/* Banner Column */}
-        <div className="hidden md:block md:col-span-5 relative overflow-hidden bg-primary-950">
+        <div className="hidden md:block md:col-span-5 relative overflow-hidden bg-charcoal">
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-85 transition-transform duration-700 hover:scale-105"
+            className="absolute inset-0 bg-cover bg-center opacity-90 transition-transform duration-700 hover:scale-105"
             style={{ backgroundImage: `url('/customer_login_banner.png')` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary-950/90 via-primary-950/20 to-transparent" />
-          <div className="absolute inset-x-6 bottom-10 text-white flex flex-col justify-end h-full">
-            <span className="text-[9px] font-display font-semibold uppercase tracking-widest text-primary-300 mb-2">
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
+          <div className="absolute inset-x-6 bottom-8 p-6 bg-charcoal/65 backdrop-blur-md rounded-2xl border border-white/10 text-white flex flex-col">
+            <span className="text-[9px] font-display font-semibold uppercase tracking-widest text-primary-200 mb-1.5">
               Premium Ayurvedic Care
             </span>
-            <h3 className="font-display text-xl font-medium tracking-wide mb-3 leading-snug">
+            <h3 className="font-display text-lg font-medium tracking-wide mb-2 leading-snug">
               Nurturing With Natural Saffron & Cold-Pressed Oils
             </h3>
-            <p className="text-[11px] text-primary-200/80 font-sans leading-relaxed">
+            <p className="text-[11px] text-white/75 font-sans leading-relaxed">
               Experience dermatologist-tested, hypoallergenic skin care designed specially for your baby's delicate touch.
             </p>
           </div>
