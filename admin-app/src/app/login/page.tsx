@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Lock, Mail, AlertTriangle } from 'lucide-react';
+import { Lock, Mail, AlertTriangle, CheckCircle } from 'lucide-react';
 import { getApiBaseUrl } from '../../utils/api';
 
 export default function AdminLogin() {
@@ -14,6 +14,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   // Already authenticated fallback check
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
+    setSuccessMsg('');
 
     const apiBaseUrl = getApiBaseUrl();
 
@@ -47,12 +49,14 @@ export default function AdminLogin() {
       }
 
       // Login success
+      setSuccessMsg('Logged in successfully! Redirecting to panel...');
       login(data.user, data.token);
-      router.push('/dashboard');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'An error occurred connecting to the storefront API.');
-    } finally {
       setLoading(false);
     }
   };
@@ -129,9 +133,16 @@ export default function AdminLogin() {
               </div>
 
               {errorMsg && (
-                <div className="bg-red-50/80 text-red-700 text-xs rounded-2xl p-3.5 border border-red-200 flex items-start space-x-2 text-left font-sans">
+                <div className="bg-red-50/80 text-red-700 text-xs rounded-2xl p-3.5 border border-red-200 flex items-start space-x-2 text-left font-sans animate-shake">
                   <AlertTriangle size={16} className="mt-0.5 flex-shrink-0 text-red-600" />
                   <span>{errorMsg}</span>
+                </div>
+              )}
+
+              {successMsg && (
+                <div className="bg-emerald-50/80 text-emerald-700 text-xs rounded-2xl p-3.5 border border-emerald-100 flex items-start space-x-2 text-left font-sans animate-fade-in">
+                  <CheckCircle size={16} className="mt-0.5 flex-shrink-0 text-emerald-600" />
+                  <span>{successMsg}</span>
                 </div>
               )}
 
