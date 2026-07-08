@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrders } from '../../../../data/mockDb';
+import { getOrders, syncFromRemote } from '../../../../data/mockDb';
 
 // GET: Retrieve orders for a specific customer email (Customer-Protected)
 // Customer must supply ?email=... and be logged in (customer_session cookie present)
 export async function GET(request: NextRequest) {
   try {
+    await syncFromRemote();
     const customerToken = request.cookies.get('customer_session')?.value;
     if (!customerToken) {
       return NextResponse.json({ error: 'Please sign in to view your orders.' }, { status: 401 });

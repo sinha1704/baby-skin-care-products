@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProductById, saveProduct, deleteProduct } from '../../../../data/mockDb';
+import { getProductById, saveProduct, deleteProduct, syncFromRemote } from '../../../../data/mockDb';
 import { Product } from '../../../../data/seed';
 import { z } from 'zod';
 
@@ -24,6 +24,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     const { id } = await params;
     const product = getProductById(id);
     if (!product) {
@@ -42,6 +43,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     // Admin check
     const authHeader = request.headers.get('Authorization');
     const token = request.cookies.get('admin_session')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
@@ -93,6 +95,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     // Admin check
     const authHeader = request.headers.get('Authorization');
     const token = request.cookies.get('admin_session')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);

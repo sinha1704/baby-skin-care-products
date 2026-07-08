@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCategories, saveCategory, deleteCategory } from '../../../../data/mockDb';
+import { getCategories, saveCategory, deleteCategory, syncFromRemote } from '../../../../data/mockDb';
 import { Category } from '../../../../data/seed';
 import { z } from 'zod';
 
@@ -16,6 +16,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     const authHeader = request.headers.get('Authorization');
     const token = request.cookies.get('admin_session')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
     if (!token || token !== 'mock-admin-jwt-token') {
@@ -59,6 +60,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     const authHeader = request.headers.get('Authorization');
     const token = request.cookies.get('admin_session')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
     if (!token || token !== 'mock-admin-jwt-token') {

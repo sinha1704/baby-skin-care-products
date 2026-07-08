@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCategories, saveCategory } from '../../../data/mockDb';
+import { getCategories, saveCategory, syncFromRemote } from '../../../data/mockDb';
 import { Category } from '../../../data/seed';
 import { z } from 'zod';
 
@@ -13,6 +13,7 @@ const categorySchema = z.object({
 // GET: List all categories
 export async function GET() {
   try {
+    await syncFromRemote();
     const categories = getCategories();
     return NextResponse.json(categories);
   } catch (error) {
@@ -24,6 +25,7 @@ export async function GET() {
 // POST: Create category (Protected)
 export async function POST(request: NextRequest) {
   try {
+    await syncFromRemote();
     // Admin check
     const authHeader = request.headers.get('Authorization');
     const token = request.cookies.get('admin_session')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);

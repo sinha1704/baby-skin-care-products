@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrders, saveOrder } from '../../../data/mockDb';
+import { getOrders, saveOrder, syncFromRemote } from '../../../data/mockDb';
 import { Order } from '../../../data/seed';
 import { z } from 'zod';
 
@@ -32,6 +32,7 @@ const orderCreateSchema = z.object({
 // GET: Retrieve all orders (Protected)
 export async function GET(request: NextRequest) {
   try {
+    await syncFromRemote();
     const authHeader = request.headers.get('Authorization');
     const token = request.cookies.get('admin_session')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
     if (!token || token !== 'mock-admin-jwt-token') {
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
 // POST: Create a customer order (Public)
 export async function POST(request: NextRequest) {
   try {
+    await syncFromRemote();
     const body = await request.json();
     const result = orderCreateSchema.safeParse(body);
 

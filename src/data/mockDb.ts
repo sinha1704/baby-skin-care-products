@@ -16,6 +16,9 @@ const IS_VERCEL = process.env.VERCEL === '1' || process.env.NOW_BUILDER === '1';
 const BUNDLED_DB_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
 const WRITE_DB_PATH = IS_VERCEL ? path.join('/tmp', 'db.json') : BUNDLED_DB_PATH;
 
+// Free public KV store bucket to persist db.json across Vercel serverless containers
+const KV_DB_URL = 'https://kvdb.io/nurture_dew_prod_db_v1_08072026/database';
+
 interface DatabaseSchema {
   categories: Category[];
   products: Product[];
@@ -23,86 +26,111 @@ interface DatabaseSchema {
   orders: Order[];
 }
 
-function initDb(): DatabaseSchema {
-  // If we are on Vercel and /tmp/db.json doesn't exist, initialize it from the bundled db.json or seed data.
-  if (IS_VERCEL && !fs.existsSync(WRITE_DB_PATH)) {
-    let baseData: DatabaseSchema;
+// Global in-memory cache to prevent redundant filesystem/network reads on active containers
+let memoryCache: DatabaseSchema | null = null;
+
+function readLocalDb(): DatabaseSchema {
+  try {
+    if (fs.existsSync(WRITE_DB_PATH)) {
+      const content = fs.readFileSync(WRITE_DB_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to read local database file:', err);
+  }
+  
+  try {
     if (fs.existsSync(BUNDLED_DB_PATH)) {
-      try {
-        const content = fs.readFileSync(BUNDLED_DB_PATH, 'utf-8');
-        baseData = JSON.parse(content);
-      } catch (e) {
-        baseData = {
-          categories: INITIAL_CATEGORIES,
-          products: INITIAL_PRODUCTS,
-          reviews: INITIAL_REVIEWS,
-          orders: INITIAL_ORDERS
-        };
-      }
-    } else {
-      baseData = {
-        categories: INITIAL_CATEGORIES,
-        products: INITIAL_PRODUCTS,
-        reviews: INITIAL_REVIEWS,
-        orders: INITIAL_ORDERS
-      };
+      const content = fs.readFileSync(BUNDLED_DB_PATH, 'utf-8');
+      return JSON.parse(content);
     }
-    try {
-      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(baseData, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to initialize db in /tmp:', err);
-    }
-    return baseData;
+  } catch (err) {}
+
+  return {
+    categories: INITIAL_CATEGORIES,
+    products: INITIAL_PRODUCTS,
+    reviews: INITIAL_REVIEWS,
+    orders: INITIAL_ORDERS
+  };
+}
+
+function initDb(): DatabaseSchema {
+  if (memoryCache) {
+    return memoryCache;
   }
 
-  // Standard non-Vercel local initialization
-  if (!IS_VERCEL) {
-    const dir = path.dirname(WRITE_DB_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+  if (fs.existsSync(WRITE_DB_PATH)) {
+    memoryCache = readLocalDb();
+    return memoryCache;
   }
 
-  if (!fs.existsSync(WRITE_DB_PATH)) {
-    const defaultData: DatabaseSchema = {
-      categories: INITIAL_CATEGORIES,
-      products: INITIAL_PRODUCTS,
-      reviews: INITIAL_REVIEWS,
-      orders: INITIAL_ORDERS
-    };
-    try {
-      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(defaultData, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to create database file:', err);
-    }
-    return defaultData;
-  }
+  const fallbackData = readLocalDb();
+  memoryCache = fallbackData;
 
   try {
-    const content = fs.readFileSync(WRITE_DB_PATH, 'utf-8');
-    return JSON.parse(content);
-  } catch (error) {
-    console.error('Failed to parse database file, resetting to seed data:', error);
-    const defaultData: DatabaseSchema = {
-      categories: INITIAL_CATEGORIES,
-      products: INITIAL_PRODUCTS,
-      reviews: INITIAL_REVIEWS,
-      orders: INITIAL_ORDERS
-    };
-    try {
-      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(defaultData, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to reset database file:', err);
+    if (IS_VERCEL) {
+      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(fallbackData, null, 2), 'utf-8');
+      // Background initialize the remote KV store on first cold-start
+      saveToRemote(fallbackData).catch(err => console.error('Background init remote failed:', err));
+    } else {
+      const dir = path.dirname(WRITE_DB_PATH);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(fallbackData, null, 2), 'utf-8');
     }
-    return defaultData;
+  } catch (err) {
+    console.error('Failed to initialize database file:', err);
+  }
+
+  return memoryCache;
+}
+
+// Fetch database state asynchronously from the KV store
+export async function syncFromRemote(): Promise<DatabaseSchema> {
+  try {
+    const res = await fetch(KV_DB_URL);
+    if (res.ok) {
+      const remoteData = await res.json() as DatabaseSchema;
+      if (remoteData && Array.isArray(remoteData.orders)) {
+        memoryCache = remoteData;
+        try {
+          fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(remoteData, null, 2), 'utf-8');
+        } catch (e) {}
+        return remoteData;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to sync from remote KV store:', err);
+  }
+  return initDb();
+}
+
+// Push database state asynchronously to the KV store
+async function saveToRemote(data: DatabaseSchema) {
+  try {
+    await fetch(KV_DB_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (err) {
+    console.error('Failed to push database to remote KV store:', err);
   }
 }
 
 function saveDb(data: DatabaseSchema) {
+  memoryCache = data;
+  
   try {
     fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error) {
     console.error('Failed to save database file:', error);
+  }
+
+  // Asynchronously sync Vercel updates with KV store
+  if (IS_VERCEL) {
+    saveToRemote(data).catch(err => console.error('Background save to remote failed:', err));
   }
 }
 

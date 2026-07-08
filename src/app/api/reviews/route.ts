@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getReviews, addReview } from '../../../data/mockDb';
+import { getReviews, addReview, syncFromRemote } from '../../../data/mockDb';
 import { z } from 'zod';
 
 const reviewSchema = z.object({
@@ -12,6 +12,7 @@ const reviewSchema = z.object({
 // GET: Fetch reviews for a specific product
 export async function GET(request: NextRequest) {
   try {
+    await syncFromRemote();
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get('productId') || undefined;
 
@@ -26,6 +27,7 @@ export async function GET(request: NextRequest) {
 // POST: Add a new review
 export async function POST(request: NextRequest) {
   try {
+    await syncFromRemote();
     const body = await request.json();
     const result = reviewSchema.safeParse(body);
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrderById, updateOrderStatus } from '../../../../data/mockDb';
+import { getOrderById, updateOrderStatus, syncFromRemote } from '../../../../data/mockDb';
 import { z } from 'zod';
 
 const orderStatusUpdateSchema = z.object({
@@ -12,6 +12,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     const { id } = await params;
     const order = getOrderById(id);
     if (!order) {
@@ -30,6 +31,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     const { id } = await params;
     const body = await request.json();
 

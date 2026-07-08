@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrderById } from '../../../../../data/mockDb';
+import { getOrderById, syncFromRemote } from '../../../../../data/mockDb';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 function fmt(amount: number): string {
@@ -11,6 +11,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await syncFromRemote();
     const { id } = await params;
     const order = getOrderById(id);
 

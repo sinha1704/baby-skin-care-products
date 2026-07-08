@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProducts, saveProduct, getCategories } from '../../../data/mockDb';
+import { getProducts, saveProduct, getCategories, syncFromRemote } from '../../../data/mockDb';
 import { Product } from '../../../data/seed';
 import { z } from 'zod';
 
@@ -21,6 +21,7 @@ const productSchema = z.object({
 // GET: Fetch list of products with filters
 export async function GET(request: NextRequest) {
   try {
+    await syncFromRemote();
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const search = searchParams.get('search');
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest) {
 // POST: Add new product (Protected)
 export async function POST(request: NextRequest) {
   try {
+    await syncFromRemote();
     // Session token check for admin guard (simple mock)
     const authHeader = request.headers.get('Authorization');
     const token = request.cookies.get('admin_session')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
