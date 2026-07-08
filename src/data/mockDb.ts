@@ -253,6 +253,27 @@ export function updateOrderStatus(id: string, status: Order['status']): boolean 
   const db = initDb();
   const index = db.orders.findIndex(o => o.id === id);
   if (index >= 0) {
+    const oldStatus = db.orders[index].status;
+    
+    // If transitioning to Cancelled from a non-Cancelled status, restore product stock
+    if (status === 'Cancelled' && oldStatus !== 'Cancelled') {
+      db.orders[index].items.forEach(item => {
+        const prodIdx = db.products.findIndex(p => p.id === item.productId);
+        if (prodIdx >= 0) {
+          db.products[prodIdx].stock += item.quantity;
+        }
+      });
+    }
+    // If restoring a Cancelled order back to a live state, decrement product stock again
+    else if (oldStatus === 'Cancelled' && status !== 'Cancelled') {
+      db.orders[index].items.forEach(item => {
+        const prodIdx = db.products.findIndex(p => p.id === item.productId);
+        if (prodIdx >= 0) {
+          db.products[prodIdx].stock = Math.max(0, db.products[prodIdx].stock - item.quantity);
+        }
+      });
+    }
+
     db.orders[index].status = status;
     saveDb(db);
     return true;
