@@ -107,7 +107,7 @@ function LoginContent() {
         {/* Form Column */}
         <div className="col-span-1 md:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
           <div>
-            <div className="mb-8">
+            <div className="mb-10">
               <Link href="/" className="font-display font-semibold text-2xl text-charcoal tracking-widest uppercase hover:opacity-80 transition-opacity">
                 NURTURE & DEW
               </Link>
