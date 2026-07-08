@@ -81,14 +81,6 @@ export default function AdminLogin() {
               </p>
             </div>
 
-            {/* Demo login notice */}
-            <div className="bg-primary-50/60 border border-primary-100/80 rounded-2xl p-4 text-[11px] text-left leading-relaxed text-primary-900 space-y-1.5 font-sans mb-6">
-              <p className="font-semibold uppercase tracking-wider text-primary-700 text-[9px]">Preconfigured Admin Account:</p>
-              <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-1 sm:space-y-0">
-                <p>Email: <span className="font-mono font-medium text-primary-950">admin@babyskin.com</span></p>
-                <p>Password: <span className="font-mono font-medium text-primary-950">admin123</span></p>
-              </div>
-            </div>
 
             {/* Login Form */}
             <form className="space-y-4" onSubmit={handleSubmit}>
