@@ -69,7 +69,7 @@ export default function AdminLogin() {
         <div className="col-span-1 md:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
           <div>
             {/* Header logo */}
-            <div className="mb-6">
+            <div className="mb-10">
               <span className="font-display text-sm tracking-widest text-primary-800 font-semibold block uppercase">
                 NURTURE & DEW
               </span>
