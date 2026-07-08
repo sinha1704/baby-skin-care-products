@@ -33,7 +33,7 @@ export default function AdminLogin() {
       const res = await fetch(`${apiBaseUrl}/api/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
 
       const data = await res.json();
@@ -58,75 +58,120 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white/70 backdrop-blur-sm border border-primary-200/40 p-8 sm:p-10 rounded-3xl shadow-sm text-center">
-        {/* Header logo */}
-        <div>
-          <span className="font-display text-lg tracking-widest text-primary-800 font-semibold block">
-            NURTURE & DEW
-          </span>
-          <h2 className="mt-4 text-xl sm:text-2xl font-display font-medium text-primary-950">
-            Admin Console Sign In
-          </h2>
-          <p className="mt-1.5 text-xs text-primary-700/60 font-sans">
-            Connect to Customer Portal API (Port 3000) to authorize.
-          </p>
-        </div>
-
-        {/* Demo login notice */}
-        <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4 text-[10px] text-left leading-relaxed text-primary-800 space-y-1 font-sans">
-          <p className="font-semibold uppercase tracking-wider text-primary-700">Preconfigured Admin Account:</p>
-          <p>• Email: <span className="font-mono">admin@babyskin.com</span></p>
-          <p>• Password: <span className="font-mono">admin123</span></p>
-        </div>
-
-        {/* Login Form */}
-        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
-          {/* Email input */}
-          <div className="relative">
-            <span className="absolute inset-y-0 left-4 flex items-center text-primary-600">
-              <Mail size={16} />
-            </span>
-            <input
-              type="email"
-              required
-              placeholder="Administrator Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-cream-light border border-primary-200 rounded-xl text-xs outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-100 transition-all duration-300"
-            />
-          </div>
-
-          {/* Password input */}
-          <div className="relative">
-            <span className="absolute inset-y-0 left-4 flex items-center text-primary-600">
-              <Lock size={16} />
-            </span>
-            <input
-              type="password"
-              required
-              placeholder="Secure Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-cream-light border border-primary-200 rounded-xl text-xs outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-100 transition-all duration-300"
-            />
-          </div>
-
-          {errorMsg && (
-            <div className="bg-red-50 text-red-650 text-xs rounded-xl p-3 border border-red-200 flex items-start space-x-2 text-left">
-              <AlertTriangle size={16} className="mt-0.5 flex-shrink-0 text-red-600" />
-              <span>{errorMsg}</span>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cream via-cream-light/60 to-cream/80 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl w-full bg-white/80 backdrop-blur-xl border border-primary-100 rounded-[32px] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[600px]">
+        
+        {/* Form Column */}
+        <div className="col-span-1 md:col-span-7 p-8 sm:p-12 flex flex-col justify-between">
+          <div>
+            {/* Header logo */}
+            <div className="mb-6">
+              <span className="font-display text-sm tracking-widest text-primary-850 font-semibold block uppercase">
+                NURTURE & DEW
+              </span>
+              <h2 className="mt-3 text-xl sm:text-2xl font-display font-medium text-primary-950 tracking-wide">
+                Admin Console Sign In
+              </h2>
+              <p className="mt-1 text-xs text-primary-700/60 font-sans">
+                Securely connect to store data services.
+              </p>
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-display font-medium text-xs tracking-wider uppercase shadow-sm transition-all focus:outline-none disabled:opacity-50"
-          >
-            {loading ? 'Verifying Credentials...' : 'Sign In To Panel'}
-          </button>
-        </form>
+            {/* Demo login notice */}
+            <div className="bg-primary-50/60 border border-primary-100/80 rounded-2xl p-4 text-[11px] text-left leading-relaxed text-primary-900 space-y-1.5 font-sans mb-6">
+              <p className="font-semibold uppercase tracking-wider text-primary-700 text-[9px]">Preconfigured Admin Account:</p>
+              <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-1 sm:space-y-0">
+                <p>Email: <span className="font-mono font-medium text-primary-950">admin@babyskin.com</span></p>
+                <p>Password: <span className="font-mono font-medium text-primary-950">admin123</span></p>
+              </div>
+            </div>
+
+            {/* Login Form */}
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* Email input */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-display font-semibold text-primary-950 uppercase tracking-widest">
+                  Administrator Email
+                </label>
+                <div className="relative group">
+                  <span className="absolute inset-y-0 left-4 flex items-center text-primary-500 group-focus-within:text-primary-750 transition-colors">
+                    <Mail size={15} />
+                  </span>
+                  <input
+                    type="email"
+                    required
+                    placeholder="admin@babyskin.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 bg-cream-light/40 border border-primary-200/80 rounded-2xl text-xs outline-none focus:border-primary-600 focus:ring-4 focus:ring-primary-100/50 transition-all duration-300 placeholder:text-primary-400"
+                  />
+                </div>
+              </div>
+
+              {/* Password input */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-display font-semibold text-primary-950 uppercase tracking-widest">
+                  Secure Password
+                </label>
+                <div className="relative group">
+                  <span className="absolute inset-y-0 left-4 flex items-center text-primary-500 group-focus-within:text-primary-750 transition-colors">
+                    <Lock size={15} />
+                  </span>
+                  <input
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 bg-cream-light/40 border border-primary-200/80 rounded-2xl text-xs outline-none focus:border-primary-600 focus:ring-4 focus:ring-primary-100/50 transition-all duration-300 placeholder:text-primary-400"
+                  />
+                </div>
+              </div>
+
+              {errorMsg && (
+                <div className="bg-red-50/80 text-red-750 text-xs rounded-2xl p-3.5 border border-red-105 flex items-start space-x-2 text-left font-sans">
+                  <AlertTriangle size={16} className="mt-0.5 flex-shrink-0 text-red-650" />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 bg-primary-600 hover:bg-primary-750 text-white rounded-2xl font-display font-semibold text-xs tracking-widest uppercase shadow-lg hover:shadow-xl hover:shadow-primary-100/50 transition-all duration-300 focus:outline-none disabled:opacity-50 transform active:scale-[0.98]"
+              >
+                {loading ? 'Verifying Credentials...' : 'Sign In To Panel'}
+              </button>
+            </form>
+          </div>
+
+          <div className="mt-6 pt-4 text-center">
+            <p className="text-[10px] text-primary-700/60 font-sans">
+              Authorized personnel only. Sessions are monitored and encrypted.
+            </p>
+          </div>
+        </div>
+
+        {/* Banner Column */}
+        <div className="hidden md:block md:col-span-5 relative overflow-hidden bg-primary-950">
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-85 transition-transform duration-700 hover:scale-105"
+            style={{ backgroundImage: `url('/admin_login_banner.png')` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary-950/90 via-primary-950/20 to-transparent" />
+          <div className="absolute inset-x-6 bottom-10 text-white flex flex-col justify-end h-full">
+            <span className="text-[9px] font-display font-semibold uppercase tracking-widest text-primary-300 mb-2">
+              Management Portal
+            </span>
+            <h3 className="font-display text-xl font-medium tracking-wide mb-3 leading-snug">
+              Nurture & Dew Control Panel
+            </h3>
+            <p className="text-[11px] text-primary-200/80 font-sans leading-relaxed">
+              Configure catalogue items, manage pending customer orders, review ratings, and keep store settings up to date.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );

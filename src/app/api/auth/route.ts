@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const { email, password } = result.data;
 
     // Check credentials matching our seed admin
-    if (email === ADMIN_USER.email && password === ADMIN_USER.passwordHash) {
+    if (email.trim().toLowerCase() === ADMIN_USER.email.trim().toLowerCase() && password === ADMIN_USER.passwordHash) {
       const response = NextResponse.json({
         success: true,
         user: {
