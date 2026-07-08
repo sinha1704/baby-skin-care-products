@@ -11,7 +11,10 @@ import {
   INITIAL_ORDERS
 } from './seed';
 
-const DB_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
+// On Vercel, the main project directory is read-only. We must write to /tmp.
+const IS_VERCEL = process.env.VERCEL === '1' || process.env.NOW_BUILDER === '1';
+const BUNDLED_DB_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
+const WRITE_DB_PATH = IS_VERCEL ? path.join('/tmp', 'db.json') : BUNDLED_DB_PATH;
 
 interface DatabaseSchema {
   categories: Category[];
@@ -21,24 +24,62 @@ interface DatabaseSchema {
 }
 
 function initDb(): DatabaseSchema {
-  const dir = path.dirname(DB_FILE_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  // If we are on Vercel and /tmp/db.json doesn't exist, initialize it from the bundled db.json or seed data.
+  if (IS_VERCEL && !fs.existsSync(WRITE_DB_PATH)) {
+    let baseData: DatabaseSchema;
+    if (fs.existsSync(BUNDLED_DB_PATH)) {
+      try {
+        const content = fs.readFileSync(BUNDLED_DB_PATH, 'utf-8');
+        baseData = JSON.parse(content);
+      } catch (e) {
+        baseData = {
+          categories: INITIAL_CATEGORIES,
+          products: INITIAL_PRODUCTS,
+          reviews: INITIAL_REVIEWS,
+          orders: INITIAL_ORDERS
+        };
+      }
+    } else {
+      baseData = {
+        categories: INITIAL_CATEGORIES,
+        products: INITIAL_PRODUCTS,
+        reviews: INITIAL_REVIEWS,
+        orders: INITIAL_ORDERS
+      };
+    }
+    try {
+      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(baseData, null, 2), 'utf-8');
+    } catch (err) {
+      console.error('Failed to initialize db in /tmp:', err);
+    }
+    return baseData;
   }
 
-  if (!fs.existsSync(DB_FILE_PATH)) {
+  // Standard non-Vercel local initialization
+  if (!IS_VERCEL) {
+    const dir = path.dirname(WRITE_DB_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  }
+
+  if (!fs.existsSync(WRITE_DB_PATH)) {
     const defaultData: DatabaseSchema = {
       categories: INITIAL_CATEGORIES,
       products: INITIAL_PRODUCTS,
       reviews: INITIAL_REVIEWS,
       orders: INITIAL_ORDERS
     };
-    fs.writeFileSync(DB_FILE_PATH, JSON.stringify(defaultData, null, 2), 'utf-8');
+    try {
+      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(defaultData, null, 2), 'utf-8');
+    } catch (err) {
+      console.error('Failed to create database file:', err);
+    }
     return defaultData;
   }
 
   try {
-    const content = fs.readFileSync(DB_FILE_PATH, 'utf-8');
+    const content = fs.readFileSync(WRITE_DB_PATH, 'utf-8');
     return JSON.parse(content);
   } catch (error) {
     console.error('Failed to parse database file, resetting to seed data:', error);
@@ -48,14 +89,18 @@ function initDb(): DatabaseSchema {
       reviews: INITIAL_REVIEWS,
       orders: INITIAL_ORDERS
     };
-    fs.writeFileSync(DB_FILE_PATH, JSON.stringify(defaultData, null, 2), 'utf-8');
+    try {
+      fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(defaultData, null, 2), 'utf-8');
+    } catch (err) {
+      console.error('Failed to reset database file:', err);
+    }
     return defaultData;
   }
 }
 
 function saveDb(data: DatabaseSchema) {
   try {
-    fs.writeFileSync(DB_FILE_PATH, JSON.stringify(data, null, 2), 'utf-8');
+    fs.writeFileSync(WRITE_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error) {
     console.error('Failed to save database file:', error);
   }
