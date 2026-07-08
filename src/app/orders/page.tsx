@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Printer,
   Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -125,6 +126,12 @@ function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }
   const [expanded, setExpanded] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
+  
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  
   const cfg = STATUS_CONFIG[order.status];
 
   const handleDownloadPDF = async () => {
@@ -148,16 +155,14 @@ function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }
       }, 100);
     } catch (err) {
       console.error(err);
-      alert('Failed to download invoice. Please try again.');
+      setErrorMessage('Failed to download invoice. Please try again.');
+      setShowErrorModal(true);
     } finally {
       setPdfLoading(false);
     }
   };
 
-  const handleCancelOrder = async () => {
-    if (!window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
-      return;
-    }
+  const confirmCancelOrder = async () => {
     setCancelLoading(true);
     try {
       const res = await fetch(`/api/orders/${order.id}`, {
@@ -169,11 +174,11 @@ function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }
       if (!res.ok) {
         throw new Error(data.error || 'Failed to cancel order');
       }
-      alert('Order cancelled successfully.');
-      onRefresh();
+      setShowSuccessModal(true);
     } catch (err: any) {
       console.error(err);
-      alert(err.message || 'Error cancelling order');
+      setErrorMessage(err.message || 'Error cancelling order');
+      setShowErrorModal(true);
     } finally {
       setCancelLoading(false);
     }
@@ -370,11 +375,9 @@ function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }
                       * Printable invoice will be unlocked once order is delivered
                     </span>
                   </div>
-                )}
-
-                {canCancel && (
+                                {canCancel && (
                   <button
-                    onClick={handleCancelOrder}
+                    onClick={() => setShowConfirmModal(true)}
                     disabled={cancelLoading}
                     className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-display font-semibold text-xs uppercase tracking-wider transition-all border border-red-200 cursor-pointer disabled:opacity-60"
                   >
@@ -411,6 +414,114 @@ function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }
               }
             `}</style>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirmModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/40 backdrop-blur-sm no-print">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-primary-100 p-6 max-w-sm w-full shadow-2xl text-center"
+            >
+              <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <XCircle size={26} />
+              </div>
+              <h3 className="font-display font-semibold text-primary-950 text-lg mb-2">
+                Cancel Order
+              </h3>
+              <p className="text-xs text-primary-750/80 font-sans leading-relaxed mb-6">
+                Are you sure you want to cancel order <strong className="font-mono text-primary-950">#{order.id}</strong>? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmModal(false)}
+                  className="flex-1 py-2.5 bg-cream border border-primary-200 text-primary-700 rounded-xl font-display font-semibold text-xs uppercase tracking-wider hover:bg-primary-50 transition-all cursor-pointer"
+                >
+                  Go Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowConfirmModal(false);
+                    confirmCancelOrder();
+                  }}
+                  className="flex-1 py-2.5 bg-red-600 text-white rounded-xl font-display font-semibold text-xs uppercase tracking-wider hover:bg-red-700 transition-all shadow-md hover:shadow-red-200 cursor-pointer"
+                >
+                  Yes, Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Modal */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/40 backdrop-blur-sm no-print">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-primary-100 p-6 max-w-sm w-full shadow-2xl text-center"
+            >
+              <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CircleCheck size={26} className="animate-bounce" />
+              </div>
+              <h3 className="font-display font-semibold text-primary-950 text-lg mb-2">
+                Order Cancelled
+              </h3>
+              <p className="text-xs text-primary-700/80 font-sans leading-relaxed mb-6">
+                Your order <strong className="font-mono text-primary-950">#{order.id}</strong> has been cancelled successfully.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  onRefresh();
+                }}
+                className="w-full py-2.5 bg-primary-600 text-white rounded-xl font-display font-semibold text-xs uppercase tracking-wider hover:bg-primary-700 transition-all shadow-md cursor-pointer"
+              >
+                Close
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Error Modal */}
+      <AnimatePresence>
+        {showErrorModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/40 backdrop-blur-sm no-print">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl border border-primary-100 p-6 max-w-sm w-full shadow-2xl text-center"
+            >
+              <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle size={26} />
+              </div>
+              <h3 className="font-display font-semibold text-primary-950 text-lg mb-2">
+                Failed to Cancel
+              </h3>
+              <p className="text-xs text-red-600/80 font-sans leading-relaxed mb-6">
+                {errorMessage}
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowErrorModal(false)}
+                className="w-full py-2.5 bg-primary-600 text-white rounded-xl font-display font-semibold text-xs uppercase tracking-wider hover:bg-primary-700 transition-all shadow-md cursor-pointer"
+              >
+                Close
+              </button>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </motion.div>
