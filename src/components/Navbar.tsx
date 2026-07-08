@@ -77,8 +77,8 @@ export const Navbar = () => {
           </div>
 
           {/* Elegant Serif Logo */}
-          <div className="flex-1 md:flex-initial flex justify-center md:justify-start">
-            <Link href="/" className="font-display text-xl sm:text-2xl font-semibold tracking-widest text-primary-800 hover:opacity-90">
+          <div className="flex-1 md:flex-initial flex justify-center md:justify-start min-w-0">
+            <Link href="/" className="font-display text-lg max-[370px]:text-[14px] min-[370px]:max-[400px]:text-[16px] sm:text-2xl font-semibold tracking-widest max-[370px]:tracking-normal min-[370px]:max-[400px]:tracking-wider text-primary-800 hover:opacity-90 whitespace-nowrap">
               NURTURE & DEW
             </Link>
           </div>
@@ -101,7 +101,7 @@ export const Navbar = () => {
           </nav>
 
           {/* Icons panel */}
-          <div className="flex items-center space-x-3 sm:space-x-5">
+          <div className="flex items-center space-x-2 max-[370px]:space-x-1 sm:space-x-5">
             {/* Search Icon */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
