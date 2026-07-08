@@ -375,7 +375,9 @@ function OrderCard({ order, onRefresh }: { order: Order; onRefresh: () => void }
                       * Printable invoice will be unlocked once order is delivered
                     </span>
                   </div>
-                                {canCancel && (
+                )}
+
+                {canCancel && (
                   <button
                     onClick={() => setShowConfirmModal(true)}
                     disabled={cancelLoading}
