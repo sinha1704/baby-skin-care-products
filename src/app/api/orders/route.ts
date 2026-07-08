@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString()
     };
 
-    const saved = saveOrder(newOrder);
+    const saved = await saveOrder(newOrder);
     return NextResponse.json(saved, { status: 201 });
   } catch (error) {
     console.error('Error creating order API:', error);

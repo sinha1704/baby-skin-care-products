@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString()
     };
 
-    const saved = saveProduct(newProduct);
+    const saved = await saveProduct(newProduct);
     return NextResponse.json(saved, { status: 201 });
   } catch (error) {
     console.error('Error creating product API:', error);

@@ -46,7 +46,7 @@ export async function PUT(
       image: val.image
     };
 
-    const saved = saveCategory(updatedCategory);
+    const saved = await saveCategory(updatedCategory);
     return NextResponse.json(saved);
   } catch (error) {
     console.error('Error updating category API:', error);
@@ -68,7 +68,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const success = deleteCategory(id);
+    const success = await deleteCategory(id);
     if (!success) {
       return NextResponse.json({ error: 'Category not found to delete' }, { status: 404 });
     }

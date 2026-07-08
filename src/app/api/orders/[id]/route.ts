@@ -61,7 +61,7 @@ export async function PUT(
         return NextResponse.json({ error: `Cannot cancel an order that is already ${order.status}` }, { status: 400 });
       }
 
-      const success = updateOrderStatus(id, 'Cancelled');
+      const success = await updateOrderStatus(id, 'Cancelled');
       if (!success) {
         return NextResponse.json({ error: 'Failed to cancel order' }, { status: 500 });
       }
@@ -81,7 +81,7 @@ export async function PUT(
       return NextResponse.json({ error: result.error.flatten() }, { status: 400 });
     }
 
-    const success = updateOrderStatus(id, result.data.status);
+    const success = await updateOrderStatus(id, result.data.status);
     if (!success) {
       return NextResponse.json({ error: 'Order not found to update' }, { status: 404 });
     }

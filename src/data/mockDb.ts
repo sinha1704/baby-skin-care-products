@@ -119,7 +119,7 @@ async function saveToRemote(data: DatabaseSchema) {
   }
 }
 
-function saveDb(data: DatabaseSchema) {
+async function saveDb(data: DatabaseSchema) {
   memoryCache = data;
   
   try {
@@ -128,9 +128,9 @@ function saveDb(data: DatabaseSchema) {
     console.error('Failed to save database file:', error);
   }
 
-  // Asynchronously sync Vercel updates with KV store
+  // Await online sync on Vercel to guarantee saving before serverless function exits
   if (IS_VERCEL) {
-    saveToRemote(data).catch(err => console.error('Background save to remote failed:', err));
+    await saveToRemote(data);
   }
 }
 
@@ -140,7 +140,7 @@ export function getCategories(): Category[] {
   return db.categories;
 }
 
-export function saveCategory(category: Category): Category {
+export async function saveCategory(category: Category): Promise<Category> {
   const db = initDb();
   const index = db.categories.findIndex(c => c.id === category.id);
   if (index >= 0) {
@@ -148,16 +148,16 @@ export function saveCategory(category: Category): Category {
   } else {
     db.categories.push(category);
   }
-  saveDb(db);
+  await saveDb(db);
   return category;
 }
 
-export function deleteCategory(id: string): boolean {
+export async function deleteCategory(id: string): Promise<boolean> {
   const db = initDb();
   const initialLength = db.categories.length;
   db.categories = db.categories.filter(c => c.id !== id);
   if (db.categories.length !== initialLength) {
-    saveDb(db);
+    await saveDb(db);
     return true;
   }
   return false;
@@ -174,7 +174,7 @@ export function getProductById(id: string): Product | undefined {
   return db.products.find(p => p.id === id || p.slug === id);
 }
 
-export function saveProduct(product: Product): Product {
+export async function saveProduct(product: Product): Promise<Product> {
   const db = initDb();
   const index = db.products.findIndex(p => p.id === product.id);
   if (index >= 0) {
@@ -192,16 +192,16 @@ export function saveProduct(product: Product): Product {
       reviewCount: 0
     });
   }
-  saveDb(db);
+  await saveDb(db);
   return product;
 }
 
-export function deleteProduct(id: string): boolean {
+export async function deleteProduct(id: string): Promise<boolean> {
   const db = initDb();
   const initialLength = db.products.length;
   db.products = db.products.filter(p => p.id !== id);
   if (db.products.length !== initialLength) {
-    saveDb(db);
+    await saveDb(db);
     return true;
   }
   return false;
@@ -216,7 +216,7 @@ export function getReviews(productId?: string): Review[] {
   return db.reviews;
 }
 
-export function addReview(productId: string, userName: string, rating: number, comment: string): Review {
+export async function addReview(productId: string, userName: string, rating: number, comment: string): Promise<Review> {
   const db = initDb();
   const newReview: Review = {
     id: `rev-${Date.now()}`,
@@ -241,7 +241,7 @@ export function addReview(productId: string, userName: string, rating: number, c
     db.products[productIndex] = product;
   }
   
-  saveDb(db);
+  await saveDb(db);
   return newReview;
 }
 
@@ -257,7 +257,7 @@ export function getOrderById(id: string): Order | undefined {
   return db.orders.find(o => o.id === id);
 }
 
-export function saveOrder(order: Order): Order {
+export async function saveOrder(order: Order): Promise<Order> {
   const db = initDb();
   const index = db.orders.findIndex(o => o.id === order.id);
   if (index >= 0) {
@@ -273,11 +273,11 @@ export function saveOrder(order: Order): Order {
       }
     });
   }
-  saveDb(db);
+  await saveDb(db);
   return order;
 }
 
-export function updateOrderStatus(id: string, status: Order['status']): boolean {
+export async function updateOrderStatus(id: string, status: Order['status']): Promise<boolean> {
   const db = initDb();
   const index = db.orders.findIndex(o => o.id === id);
   if (index >= 0) {
@@ -303,7 +303,7 @@ export function updateOrderStatus(id: string, status: Order['status']): boolean 
     }
 
     db.orders[index].status = status;
-    saveDb(db);
+    await saveDb(db);
     return true;
   }
   return false;

@@ -81,7 +81,7 @@ export async function PUT(
       isFeatured: val.isFeatured
     };
 
-    const saved = saveProduct(updatedProduct);
+    const saved = await saveProduct(updatedProduct);
     return NextResponse.json(saved);
   } catch (error) {
     console.error('Error updating product API:', error);
@@ -104,7 +104,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const success = deleteProduct(id);
+    const success = await deleteProduct(id);
     if (!success) {
       return NextResponse.json({ error: 'Product not found to delete' }, { status: 404 });
     }

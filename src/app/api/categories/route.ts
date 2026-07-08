@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       image: val.image
     };
 
-    const saved = saveCategory(newCategory);
+    const saved = await saveCategory(newCategory);
     return NextResponse.json(saved, { status: 201 });
   } catch (error) {
     console.error('Error creating category API:', error);

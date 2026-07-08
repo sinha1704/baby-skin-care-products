@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const val = result.data;
-    const review = addReview(val.productId, val.userName, val.rating, val.comment);
+    const review = await addReview(val.productId, val.userName, val.rating, val.comment);
     
     return NextResponse.json(review, { status: 201 });
   } catch (error) {
